@@ -1,0 +1,6 @@
+# compiled output
+/artifacts
+/reports
+
+# dependencies
+/node_modules
