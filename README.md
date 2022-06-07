@@ -1,3 +1,5 @@
+[![npm](https://img.shields.io/npm/v/v10)](https://www.npmjs.com/package/check-i18n)
+
 # Check translations script
 
 Script get translations by URL and compare (one way) with local directory.
