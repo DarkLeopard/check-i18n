@@ -14,7 +14,7 @@ Optimised for Unix and Windows.
 
 ## How to use
 
-* `-f` or `--i18ndir` - link to lang JSON files (now https; http and local will add later)
+* `-f` or `--i18ndir` - path to lang JSON files (http/https or local)
 * `-d` or `--finddir` - where to find directory
 * `-c` or `--cutkeys` - repeat search for cut translations
 
