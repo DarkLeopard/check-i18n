@@ -1,15 +1,40 @@
-while getopts f:d:c: flag; do
-  case "${flag}" in
-  d) dir=${OPTARG} ;;
-  f) i18n=${OPTARG} ;;
-  c) cut=${OPTARG} ;;
+for i in "$@"; do
+  case $i in
+    -f=*|--i18ndir=*)
+      I18NDIR="${i#*=}"
+      shift # past argument=value
+      ;;
+    -d=*|--finddir=*)
+      FINDDIR="${i#*=}"
+      shift # past argument=value
+      ;;
+    -c=*|--cutkeys=*)
+      CUTKEYS="${i#*=}"
+      shift # past argument=value
+      ;;
+    --default)
+      DEFAULT=YES
+      shift # past argument with no value
+      ;;
+    -*|--*)
+      echo "Unknown option $i"
+      exit 1
+      ;;
+    *)
+      ;;
   esac
 done
 
-echo "Find in directory: $dir"
-echo "Path of i18n JSON file: $i18n"
-echo "Cut keys (second iteration): $cut"
+echo "Find in directory: $FINDDIR"
+echo "Path of i18n JSON file: $I18NDIR"
+echo "Cut keys (second iteration): $CUTKEYS"
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd 2>/dev/null)"
+if [[ -n $1 ]]; then
+    echo "Last line of file specified as non-opt/last argument:"
+    tail -1 "$1"
+fi
 
-node $SCRIPT_DIR/dist/index.js --findDir=$dir --i18nDir=$i18n --cutKeys=$cut
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
+
+node $SCRIPT_DIR/dist/index.js --findDir=$FINDDIR --i18nDir=$I18NDIR --cutKeys=$CUTKEYS
+

@@ -1,6 +1,6 @@
 {
   "name": "check-i18n",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Check (Angular) JSON i18n translations from link in local directory.",
   "repository": {
     "type": "git",
@@ -43,5 +43,11 @@
   },
   "author": "Barabanov Sergey Konstantinovich",
   "license": "Apache-2.0",
-  "keywords": ["i18n", "translate", "traslations", "angular", "ngx-translate"]
+  "keywords": [
+    "i18n",
+    "translate",
+    "traslations",
+    "angular",
+    "ngx-translate"
+  ]
 }
