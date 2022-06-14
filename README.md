@@ -14,13 +14,13 @@ Optimised for Unix and Windows.
 
 ## How to use
 
-* `-f link_string` - path to lang JSON files
-* `-d path_string` - where to find directory
-* `-c boolean` - research cut translations
+* `-f` or `--i18ndir` - link to lang JSON files (now https; http and local will add later)
+* `-d` or `--finddir` - where to find directory
+* `-c` or `--cutkeys` - repeat search for cut translations
 
 Use `check-i18n -d [value] -f [value] -c [value]`.
 
-Example: `check-i18n -d ./libs -f https://site.ru/api/v1/translations -c true`
+Example: `check-i18n -d=./libs -f=https://site.ru/api/v1/translations -c=true`
 
 At the end of process file with results will be in folder.
 File name will have timestamp attributes.
