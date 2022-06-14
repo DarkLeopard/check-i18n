@@ -2,7 +2,7 @@
 
 # Check translations script
 
-Script get translations by URL and compare (one way) with local directory.
+Script get translations by http/http/local path and compare (one way) with local directory.
 
 Check include:
 * dynamic translations
