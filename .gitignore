@@ -1,7 +1,6 @@
 # compiled output
-/artifacts
+i18n-report*.json
 /dist
-/i18n-report*.json
 
 # dependencies
 /node_modules

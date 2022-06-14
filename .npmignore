@@ -1,6 +1,6 @@
 index.ts
+i18n-report*.json
 tsconfig.json
 .eslintrc.js
 .idea
 /src
-/reports

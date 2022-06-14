@@ -1,5 +1,7 @@
+import {readFileSync} from 'fs';
+import * as http from 'http';
 import {IncomingMessage} from 'http';
-import {get} from 'https';
+import * as https from 'https';
 import {
 	Observable,
 	Subscriber,
@@ -46,24 +48,45 @@ export class Translation {
 		return result;
 	}
 
-	private getTranslations$(url: string): Observable<IRawTranslation> {
+	private getTranslations$(path: string): Observable<IRawTranslation> {
 		return new Observable<IRawTranslation>((subscriber: Subscriber<IRawTranslation>) => {
-			get(url, (incomingMessage: IncomingMessage) => {
-				incomingMessage.setEncoding('utf8');
-				const dataChunks: string[] = [];
-				incomingMessage
-					.on('data', (dataChunk: string) => {
-						dataChunks.push(dataChunk);
-					})
-					.on('end', () => {
-						const translation: IRawTranslation = JSON.parse(dataChunks.join(''));
-						subscriber.next(translation);
-						subscriber.complete();
-					})
-					.on('error', function () {
-						throw new Error('Failed to make an translation request');
-					});
-			});
+			const callback: (incomingMessage: IncomingMessage) => any = (incomingMessage: IncomingMessage) => {
+				this.getTranslationFromLinkCallback(incomingMessage, subscriber)
+			};
+			switch (true) {
+				case /^http:\/\/.*$/.test(path):
+					http.get(path, callback);
+					break;
+				case /^https:\/\/.*$/.test(path):
+					https.get(path, callback);
+					break;
+				case /^.*\.json/.test(path):
+					subscriber.next(this.getLocalI18n(path));
+					subscriber.complete();
+				default:
+					throw new Error('Can\'t detect translation source');
+			}
 		});
+	}
+
+	private getTranslationFromLinkCallback(incomingMessage: IncomingMessage, subscriber: Subscriber<IRawTranslation>) {
+		incomingMessage.setEncoding('utf8');
+		const dataChunks: string[] = [];
+		incomingMessage
+			.on('data', (dataChunk: string) => {
+				dataChunks.push(dataChunk);
+			})
+			.on('end', () => {
+				const translation: IRawTranslation = JSON.parse(dataChunks.join(''));
+				subscriber.next(translation);
+				subscriber.complete();
+			})
+			.on('error', function () {
+				throw new Error('Failed to make an translation request');
+			});
+	}
+
+	private getLocalI18n(path: string): IRawTranslation {
+		return JSON.parse(readFileSync(path, {encoding: 'utf8'}));
 	}
 }

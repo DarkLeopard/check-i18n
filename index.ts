@@ -93,7 +93,7 @@ translation.init()
 				switchMap((searchedChunks: ISearchedChanks) => {
 					if (CUT_RESEARCH_KEYS) {
 						const visualLoaderCut: VisualLoader = new VisualLoader(
-							`Research unfounded cut keys`,
+							`Repeat search for check unfounded cut keys`,
 						);
 						const createLoaderFn: CreateLoaderFnType = (chunksNumber: number) =>
 							visualLoaderCut.initChunksBar(chunksNumber);
