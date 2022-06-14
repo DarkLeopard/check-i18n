@@ -8,4 +8,4 @@
 
 ## Reporting a Vulnerability
 
-If you have troubles You can contact me at `darkleopard3@ya.ru`.
+If you have troubles You can use GitHub issues.
