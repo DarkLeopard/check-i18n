@@ -37,7 +37,7 @@ Maybe it was max size for chunks or unfixed render problem.
 
 ## Feedback
 
-If you have troubles You can contact me at`darkleopard3@ya.ru`.
+If you have troubles You can use GitHub issues.
 
 ---
 
