@@ -1,4 +1,4 @@
-[![npm](https://img.shields.io/npm/v/v10)](https://www.npmjs.com/package/check-i18n)
+[![npm](https://img.shields.io/npm/v/check-i18n)](https://www.npmjs.com/package/check-i18n)
 
 # Check translations script
 

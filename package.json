@@ -1,6 +1,6 @@
 {
   "name": "check-i18n",
-  "version": "1.0.1",
+  "version": "1.0.4",
   "description": "Check (Angular) JSON i18n translations from link in local directory.",
   "repository": {
     "type": "git",
@@ -9,6 +9,7 @@
   "main": "./dist/index.js",
   "scripts": {
     "build": "rimraf ./dist && tsc",
+    "prepublishOnly": "npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
