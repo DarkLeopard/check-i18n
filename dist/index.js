@@ -98,7 +98,7 @@ function prepareProgramResult(searchedChunks) {
     };
 }
 function saveLocalJSON(data) {
-    const file = `./reports/i18n-report_${START_TIME}.json`;
+    const file = `./i18n-report_${START_TIME}.json`;
     (0, fs_1.appendFile)(file, JSON.stringify(data), { encoding: 'utf8' }, (error) => {
         if (error) {
             throw error;

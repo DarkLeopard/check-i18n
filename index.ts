@@ -143,7 +143,7 @@ function prepareProgramResult(searchedChunks: ISearchedChanks): ICookedResult {
 }
 
 function saveLocalJSON(data: ICookedResult): void {
-	const file: string = `./reports/i18n-report_${START_TIME}.json`;
+	const file: string = `./i18n-report_${START_TIME}.json`;
 	appendFile(
 		file,
 		JSON.stringify(data),
