@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+  <span [innerHTML]="'HTML.innerKey' | translate"></span>
+  <span>{{'HTML.interpolateKey' | translate}}</span>
+  <span>{{'HTML.dynamic.' + valueKey | translate}}</span>
+
+  <span [innerHTML]='"HTML.innerKey1" | translate'></span>
+</body>
+</html>

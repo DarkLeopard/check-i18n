@@ -30,7 +30,7 @@ export class TranslationKey {
 		return this.paths.length === 0;
 	}
 
-	public get keyRegExp(): RegExp {
+	public get regExp(): RegExp {
 		let value: string = this.value;
 		switch (true) {
 			case this.hasNumberAtEnd(value):
@@ -52,8 +52,8 @@ export class TranslationKey {
 	}
 
 	/** Realisation without get raw value for results cos classes used. That can affect those classes in memory. */
-	public cutValue(value: string = this.value): this {
-		let newValue: string = value;
+	public cutValue(): this {
+		let newValue: string = this.value;
 		if (!this.isCut) {
 			newValue = this.deleteLastSegment(newValue);
 			if (this.hasNumberAtEnd(newValue)) {
@@ -78,11 +78,6 @@ export class TranslationKey {
 		}
 	}
 
-	public isExcluded(excludeKeys: string[]): true | string {
-		const keyRegExp: RegExp = new RegExp(`^${QUOTES_REGEXP_STR}${this.value}[A-Za-z0-9\._-]{0,60}${QUOTES_REGEXP_STR}`);
-		return excludeKeys.some((excludedKey: string) => excludedKey.match(keyRegExp)) || this.value;
-	}
-
 	private hasNumberAtEnd(value: string): boolean {
 		const valueArr: string[] = value.split('.');
 		const numberRexExp: RegExp = new RegExp('^\d$');
@@ -93,7 +88,7 @@ export class TranslationKey {
 		const valueArr: string[] = value.split('.');
 		// check more when one segment
 		if (valueArr.length > 1) {
-			valueArr.pop();
+			console.log(valueArr.slice(0, valueArr.length - 1).join('.'));
 			return valueArr.slice(0, valueArr.length - 1).join('.');
 		} else {
 			return value;

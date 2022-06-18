@@ -45,7 +45,7 @@ export class Search {
 	}
 
 	private getSearchedChunks(key: TranslationKey): ISearchedChanks {
-		const searchResults: TranslationKey[] = this.searchPatternInDirectory(key.keyRegExp, key);
+		const searchResults: TranslationKey[] = this.searchPatternInDirectory(key);
 
 		const uniqByFc: (key: TranslationKey) => boolean = (key: TranslationKey) => !!key.value;
 
@@ -61,7 +61,6 @@ export class Search {
 	}
 
 	private searchPatternInDirectory(
-		pattern: RegExp,
 		key: TranslationKey,
 	): TranslationKey[] {
 		return this.paths
@@ -69,11 +68,10 @@ export class Search {
 				const fileContent: string | undefined = this.filesContent[path] || readFileSync(path, {encoding: 'utf8'});
 				this.filesContent[path] = fileContent;
 
-				if (pattern.test(fileContent)) {
+				if (key.regExp.test(fileContent)) {
 					// console.info(`${key.value} was found in file: ${path}`);
 					return key.setPath(path);
 				} else {
-					// console.info(`${key} was NOT found in file: ${path}`);
 					return key;
 				}
 			});
@@ -99,7 +97,6 @@ export class Search {
 					files.push(filePath);
 				}
 			});
-
 		return files;
 	}
 }

@@ -4,6 +4,9 @@ import {
 	SingleBar,
 } from 'cli-progress';
 
+export type CreateLoaderFnType = (chunksNumber: number) => void;
+export type IncrementLoaderFnType = () => void;
+
 export class VisualLoader {
 	private chunkBar: SingleBar;
 
@@ -18,6 +21,10 @@ export class VisualLoader {
 			hideCursor: true,
 		}, Presets.shades_grey);
 	}
+
+	public incrementLoaderFn: IncrementLoaderFnType = () => this.incrementChunks();
+
+	public createLoaderFn: CreateLoaderFnType = (chunksNumber: number) => this.initChunksBar(chunksNumber);
 
 	public stop(): void {
 		this.chunkBar.stop();

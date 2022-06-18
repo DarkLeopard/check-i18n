@@ -10,9 +10,7 @@ import {switchMap} from 'rxjs/operators';
 import {ISearchedChanks} from './interfaces/searched-chunks.interface';
 import {Search} from './search.class';
 import {TranslationKey} from './tranlation-key.class';
-
-export type CreateLoaderFnType = (chunksNumber: number) => void;
-export type IncrementLoaderFnType = () => void;
+import {VisualLoader} from './visual-loader.class';
 
 export class TranslationChunks {
 	private searchedResultsBSubject: BehaviorSubject<ISearchedChanks> = new BehaviorSubject<ISearchedChanks>({
@@ -54,15 +52,13 @@ export class TranslationChunks {
 
 	public searchChunks$(
 		translationKeys: TranslationKey[],
-		excludedKeys: string[],
-		createLoaderFn: CreateLoaderFnType = () => undefined,
-		incrementLoaderFn: IncrementLoaderFnType = () => undefined,
+		visualLoader?: VisualLoader,
 	): Observable<ISearchedChanks> {
-		const searchChunks: Observable<ISearchedChanks>[][] = this.createChunks(translationKeys, excludedKeys);
-		if (createLoaderFn) {
-			createLoaderFn(searchChunks.length);
+		const searchChunks: Observable<ISearchedChanks>[][] = this.createChunks(translationKeys);
+		if (visualLoader) {
+			visualLoader.createLoaderFn(searchChunks.length);
 		}
-		return this.recursSearchChunks$(searchChunks, incrementLoaderFn)
+		return this.recursSearchChunks$(searchChunks, visualLoader)
 			.pipe(
 				map((result: ISearchedChanks[]) => {
 					return this.searchedResults = this.combineChunks(result);
@@ -70,20 +66,19 @@ export class TranslationChunks {
 			);
 	}
 
-	public researchCutUnfoundedKeys(
-		createLoaderFn: CreateLoaderFnType = () => undefined,
-		incrementLoaderFn: IncrementLoaderFnType = () => undefined,
-	): Observable<ISearchedChanks> {
-		const unfoundedKeys: TranslationKey[] = this.searchedResults.unfounded;
-		const unfoundedCutKeys: TranslationKey[] = unfoundedKeys.map((value: TranslationKey) => value.cutValue());
+	public searchCutUnfoundedKeys(visualLoader?: VisualLoader): Observable<ISearchedChanks> {
+		const unfoundedCutKeys: TranslationKey[] = this.searchedResults
+			.unfounded
+			.map((value: TranslationKey) => value.cutValue());
+		console.log(unfoundedCutKeys.map(v => v.value));
 
 		const searchChunks: Observable<ISearchedChanks>[][] = this.createChunks(unfoundedCutKeys);
 
-		if (createLoaderFn) {
-			createLoaderFn(searchChunks.length);
+		if (visualLoader) {
+			visualLoader.createLoaderFn(searchChunks.length);
 		}
 
-		return this.recursSearchChunks$(searchChunks, incrementLoaderFn)
+		return this.recursSearchChunks$(searchChunks, visualLoader)
 			.pipe(
 				map((result: ISearchedChanks[]) => {
 					const combinedChunks: ISearchedChanks = this.combineChunks(result);
@@ -99,7 +94,7 @@ export class TranslationChunks {
 
 	private recursSearchChunks$(
 		queryChunks: Observable<ISearchedChanks>[][],
-		incrementLoaderFn: IncrementLoaderFnType,
+		visualLoader?: VisualLoader,
 		chunkCounter: number = 0,
 		searchedChunks: ISearchedChanks[] = [],
 	): Observable<ISearchedChanks[]> {
@@ -107,13 +102,13 @@ export class TranslationChunks {
 			.pipe(
 				switchMap((foundedResults: ISearchedChanks[]) => {
 					if (chunkCounter >= (queryChunks.length - 1)) {
-						incrementLoaderFn();
+						visualLoader?.incrementLoaderFn();
 						return of([...searchedChunks, ...foundedResults]);
 					} else {
 						chunkCounter++;
-						incrementLoaderFn();
+						visualLoader?.incrementLoaderFn();
 						searchedChunks.push(...foundedResults);
-						return this.recursSearchChunks$(queryChunks, incrementLoaderFn, chunkCounter, searchedChunks);
+						return this.recursSearchChunks$(queryChunks, visualLoader, chunkCounter, searchedChunks);
 					}
 				}),
 			);
@@ -121,12 +116,9 @@ export class TranslationChunks {
 
 	private createChunks(
 		translationKeys: TranslationKey[],
-		excludedKeys: string[] = [],
 	): Observable<ISearchedChanks>[][] {
 		return chunk(
 			translationKeys
-				// filter excluded key from user
-				.filter((key: TranslationKey) => excludedKeys.length > 0 ? key.isExcluded(excludedKeys) : true)
 				.map((key: TranslationKey) => {
 					// console.info(`Add to search key: ${key.value}`);
 					return this.search.find$(key);
