@@ -20,6 +20,7 @@ interface ProgramConfig {
 	fileNameRegexp: RegExp;
 	whereToFindDir: string;
 	cutKeys: boolean;
+	replacePlural: boolean;
 }
 
 export class Program {
@@ -29,6 +30,7 @@ export class Program {
 	private readonly whereToFindDir: string;
 	private readonly cutKeys: boolean;
 	private readonly startTime: number = now();
+	private readonly replacePlural: boolean;
 
 	constructor(
 		private readonly config: ProgramConfig,
@@ -38,6 +40,7 @@ export class Program {
 		this.fileNameRegexp = config.fileNameRegexp;
 		this.whereToFindDir = config.whereToFindDir;
 		this.cutKeys = config.cutKeys;
+		this.replacePlural = config.replacePlural;
 	}
 
 	public init(): void {
@@ -48,6 +51,7 @@ export class Program {
 				const chunksArray: TranslationChunks = new TranslationChunks(
 					this.chunkSize,
 					new Search(this.whereToFindDir, this.fileNameRegexp),
+					this.replacePlural,
 				);
 				chunksArray.searchChunks$(
 					this.translation.keys,
@@ -74,7 +78,15 @@ export class Program {
 
 								return chunksArray.searchCutUnfoundedKeys(visualLoaderCut)
 									.pipe(
-										finalize(() => visualLoaderCut.stop()),
+										finalize(() => {
+											// return to normal state
+											// not necessary, but was in old realisation
+											[...searchedChunks.founded, ...searchedChunks.unfounded]
+												.filter((key: TranslationKey) => key.isCut)
+												.forEach((key: TranslationKey) => key.uncutValue());
+
+											visualLoaderCut.stop();
+										}),
 									);
 							} else {
 								return of(searchedChunks);
@@ -89,19 +101,13 @@ export class Program {
 	}
 
 	private prepareProgramResult(searchedChunks: ISearchedChanks, isKeysCut: boolean = this.cutKeys): ICookedResult {
-		const cutKeys: TranslationKey[] = isKeysCut
-			? [...searchedChunks.founded, ...searchedChunks.unfounded].filter((key: TranslationKey) => key.isCut)
-			: [];
-		if (isKeysCut) {
-			cutKeys.forEach((key: TranslationKey) => key.uncutValue());
-		}
 		return {
 			foundedKeys: {
-				keys: searchedChunks.founded.map((key: TranslationKey) => key.value),
+				keys: searchedChunks.founded.map((key: TranslationKey) => key.rawValue),
 				amount: searchedChunks.founded.length,
 			},
 			unfoundedKeys: {
-				keys: searchedChunks.unfounded.map((key: TranslationKey) => key.value),
+				keys: searchedChunks.unfounded.map((key: TranslationKey) => key.rawValue),
 				amount: searchedChunks.unfounded.length,
 			},
 		};

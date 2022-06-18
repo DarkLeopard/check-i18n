@@ -8,10 +8,14 @@ for i in "$@"; do
       FINDDIR="${i#*=}"
       shift # past argument=value
       ;;
-    -c=*|--cutkeys=*)
+    --cutkeys=*)
       CUTKEYS="${i#*=}"
       shift # past argument=value
       ;;
+    --replaceplural=*)
+          REPLACEPLURAL="${i#*=}"
+          shift # past argument=value
+          ;;
     --default)
       DEFAULT=YES
       shift # past argument with no value
@@ -28,6 +32,7 @@ done
 echo "Find in directory: $FINDDIR"
 echo "Path of i18n JSON file: $I18NDIR"
 echo "Cut keys (second iteration): $CUTKEYS"
+echo "Use plural matcher: $REPLACEPLURAL"
 
 if [[ -n $1 ]]; then
     echo "Last line of file specified as non-opt/last argument:"
@@ -36,5 +41,5 @@ fi
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
 
-node $SCRIPT_DIR/dist/index.js --findDir=$FINDDIR --i18nDir=$I18NDIR --cutKeys=$CUTKEYS
+node $SCRIPT_DIR/dist/index.js --findDir=$FINDDIR --i18nDir=$I18NDIR --cutKeys=$CUTKEYS --replacePlural=$REPLACEPLURAL
 

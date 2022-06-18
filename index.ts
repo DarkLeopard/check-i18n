@@ -4,12 +4,14 @@ enum PropsEnum {
 	I18nPath = '--i18nDir=',
 	FindInDir = '--findDir=',
 	CutKeys = '--cutKeys=',
+	ReplacePlural = '--replacePlural=',
 }
 
 const CONSOLE_PROPS: string[] = process.argv;
 const translationUrl: string | undefined = getProp(PropsEnum.I18nPath);
 const whereToFindDir: string | undefined = getProp(PropsEnum.FindInDir);
 const cutKeys: boolean = getProp(PropsEnum.CutKeys) === 'true' || false;
+const replacePlural: boolean = getProp(PropsEnum.ReplacePlural) === 'true' || false;
 
 // check required params
 if (!whereToFindDir || !translationUrl) {
@@ -34,6 +36,7 @@ const program: Program = new Program({
 	translationPath: translationUrl,
 	whereToFindDir: whereToFindDir,
 	cutKeys: cutKeys,
+	replacePlural: replacePlural,
 });
 
 program.init();

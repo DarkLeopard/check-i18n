@@ -22,6 +22,7 @@ export class TranslationChunks {
 	constructor(
 		private chunkSize: number = 20,
 		private search: Search,
+		private replacePlural: boolean,
 	) {
 	}
 
@@ -70,7 +71,6 @@ export class TranslationChunks {
 		const unfoundedCutKeys: TranslationKey[] = this.searchedResults
 			.unfounded
 			.map((value: TranslationKey) => value.cutValue());
-		console.log(unfoundedCutKeys.map(v => v.value));
 
 		const searchChunks: Observable<ISearchedChanks>[][] = this.createChunks(unfoundedCutKeys);
 
@@ -120,6 +120,10 @@ export class TranslationChunks {
 		return chunk(
 			translationKeys
 				.map((key: TranslationKey) => {
+					if (this.replacePlural) {
+						key.replacePlural();
+					}
+
 					// console.info(`Add to search key: ${key.value}`);
 					return this.search.find$(key);
 				}),

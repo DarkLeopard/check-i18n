@@ -4,14 +4,18 @@ export class TranslationKey {
 	private paths: string[] = [];
 
 	/** Realisation without get raw value for results cos classes used. That can affect those classes in memory. */
-	private readonly rawValue: string;
+	readonly #rawValue: string;
 
 	#isCut: boolean = false;
 
 	constructor(
 		public value: string,
 	) {
-		this.rawValue = value;
+		this.#rawValue = value;
+	}
+
+	public get rawValue(): string {
+		return this.#rawValue;
 	}
 
 	public get isCut(): boolean {
@@ -70,7 +74,7 @@ export class TranslationKey {
 	/** Realisation without get raw value for results cos classes used. That can affect those classes in memory. */
 	public uncutValue(): this {
 		if (this.isCut) {
-			this.value = this.rawValue;
+			this.value = this.#rawValue;
 			this.isCut = false;
 			return this;
 		} else {
@@ -88,7 +92,6 @@ export class TranslationKey {
 		const valueArr: string[] = value.split('.');
 		// check more when one segment
 		if (valueArr.length > 1) {
-			console.log(valueArr.slice(0, valueArr.length - 1).join('.'));
 			return valueArr.slice(0, valueArr.length - 1).join('.');
 		} else {
 			return value;
@@ -98,5 +101,16 @@ export class TranslationKey {
 	private changeValue(value: string): TranslationKey {
 		this.value = value;
 		return this;
+	}
+
+	public replacePlural(): void {
+		// old plural pipe on project
+		const pluralTranslationRegExp: RegExp = /(_one|_many|_other)$/;
+		const pluralInCode: string = '_%ending%';
+
+		// replace old plural defaults in key to '%ending%'
+		if (pluralTranslationRegExp.test(this.value)) {
+			this.changeValue(this.value.replace(pluralTranslationRegExp, `${pluralInCode}`));
+		}
 	}
 }

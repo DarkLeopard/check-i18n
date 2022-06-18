@@ -5,7 +5,10 @@
     "interpolateKey": "",
     "dynamic": {
       "key": ""
-    }
+    },
+    "plural-test_one": "",
+    "plural-test_many": "",
+    "plural-test_other": ""
   },
   "TS": {
     "instant": "",

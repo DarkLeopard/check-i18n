@@ -1,3 +1,4 @@
+// @ts-ignore
 class Example {
 	private testFns: {
 		instant: (key: string | Array<string>) => any,
