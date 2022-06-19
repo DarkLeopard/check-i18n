@@ -14,8 +14,8 @@
     "build": "rimraf ./dist && tsc",
     "prepublishOnly": "npm run build",
     "test:start": "npm run build && npm link",
-    "test:js": "npm run test:start && node ./dist/index.js --i18nDir=./tests/mocks/example.json --findDir=./tests/mocks/find-dir --cutKeys=true --replacePlural=true",
-    "test:sh": "npm run test:start && check-i18n -f=./tests/mocks/example.json -d=./tests/mocks/find-dir --cutkeys=true --replaceplural=true"
+    "test:js": "npm run test:start && node ./dist/index.js --i18nDir=./tests/mocks/example.json --findDir=./tests/mocks/find-dir --cutKeys=true --replacePlural=true --reverseSearch=true",
+    "test:sh": "npm run test:start && check-i18n -f=./tests/mocks/example.json -d=./tests/mocks/find-dir --cutkeys=true --replaceplural=true --reversesearch=true"
   },
   "bin": {
     "check-i18n": "./cli.sh"

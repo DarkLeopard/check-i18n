@@ -16,6 +16,10 @@ for i in "$@"; do
           REPLACEPLURAL="${i#*=}"
           shift # past argument=value
           ;;
+    --reversesearch=*)
+          REVERSESEARCH="${i#*=}"
+          shift # past argument=value
+          ;;
     --default)
       DEFAULT=YES
       shift # past argument with no value
@@ -33,6 +37,7 @@ echo "Find in directory: $FINDDIR"
 echo "Path of i18n JSON file: $I18NDIR"
 echo "Cut keys (second iteration): $CUTKEYS"
 echo "Use plural matcher: $REPLACEPLURAL"
+echo "Reverse search keys: $REVERSESEARCH"
 
 if [[ -n $1 ]]; then
     echo "Last line of file specified as non-opt/last argument:"
@@ -41,5 +46,5 @@ fi
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]:-$0}"; )" &> /dev/null && pwd 2> /dev/null; )";
 
-node $SCRIPT_DIR/dist/index.js --findDir=$FINDDIR --i18nDir=$I18NDIR --cutKeys=$CUTKEYS --replacePlural=$REPLACEPLURAL
+node $SCRIPT_DIR/dist/index.js --findDir=$FINDDIR --i18nDir=$I18NDIR --cutKeys=$CUTKEYS --replacePlural=$REPLACEPLURAL --reverseSearch=$REVERSESEARCH
 

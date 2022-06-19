@@ -43,7 +43,7 @@ export class Program {
 		this.replacePlural = config.replacePlural;
 	}
 
-	public init(): void {
+	public directSearch(reverseSearch: boolean): void {
 		this.translation.init()
 			.subscribe(() => {
 				const visualLoaderGeneral: VisualLoader = new VisualLoader(`Search translation keys`);
@@ -94,13 +94,60 @@ export class Program {
 						}),
 					)
 					.subscribe((searchedChunks: ISearchedChanks) => {
-						this.saveLocalJSON(this.prepareProgramResult(searchedChunks));
+						this.saveLocalJSON(this.prepareBasicSearchResult(searchedChunks));
+
+						if (reverseSearch) {
+							this.reverseSearch();
+						}
 					});
 			});
 
 	}
 
-	private prepareProgramResult(searchedChunks: ISearchedChanks, isKeysCut: boolean = this.cutKeys): ICookedResult {
+	public reverseSearch() {
+		const visualLoaderReverse: VisualLoader = new VisualLoader(`Reverse search`);
+		visualLoaderReverse.initChunksBar(4);
+		visualLoaderReverse.incrementChunks();
+		this.translation.init()
+			.subscribe(() => {
+				const reverceSearch: Search = new Search(this.whereToFindDir, this.fileNameRegexp);
+				visualLoaderReverse.incrementChunks();
+				const searchResults: TranslationKey[] = reverceSearch.searchPatternInPaths(this.replacePlural);
+				visualLoaderReverse.incrementChunks();
+
+				const result = searchResults
+					.filter((key: TranslationKey) => {
+						return !this.translation.keys
+							.some((translationKey: TranslationKey) => {
+								if (/\.$/.test(key.value)) {
+									const result: boolean = key.value === translationKey.cutValue().value;
+									translationKey.uncutValue();
+									return result;
+								} else {
+									return key.value === translationKey.value;
+								}
+							});
+					});
+				visualLoaderReverse.incrementChunks();
+				this.saveLocalJSON({
+					notInJSON: {
+						keys: result.map((key: TranslationKey) => key.value),
+						amount: result.length,
+					},
+					translation: {
+						keys: this.translation.keys.map((key: TranslationKey) => key.value),
+						amount: this.translation.keys.length,
+					},
+					searchedKeysInCode: {
+						keys: searchResults.map((key: TranslationKey) => key.value),
+						amount: searchResults.length,
+					},
+				}, 'reverse-search');
+				visualLoaderReverse.stop()
+			});
+	}
+
+	private prepareBasicSearchResult(searchedChunks: ISearchedChanks): ICookedResult {
 		return {
 			foundedKeys: {
 				keys: searchedChunks.founded.map((key: TranslationKey) => key.rawValue),
@@ -113,8 +160,8 @@ export class Program {
 		};
 	}
 
-	private saveLocalJSON(data: ICookedResult): void {
-		const file: string = `./i18n-report_${this.startTime}.json`;
+	private saveLocalJSON(data: Object, name: string = 'i18n-report'): void {
+		const file: string = `./${name}_${this.startTime}.json`;
 		appendFile(
 			file,
 			JSON.stringify(data, undefined, 2),

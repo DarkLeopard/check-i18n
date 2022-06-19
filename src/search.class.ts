@@ -19,6 +19,11 @@ import {
 	Observable,
 	Subscriber,
 } from 'rxjs';
+import {
+	PLURAL_CODE_REGEXP_STR,
+	PLURAL_ENDINGS,
+	QUOTES_REGEXP_STR,
+} from './constants/regexp';
 import {ISearchedChanks} from './interfaces/searched-chunks.interface';
 import {TranslationKey} from './tranlation-key.class';
 
@@ -44,8 +49,53 @@ export class Search {
 			});
 	}
 
+	public searchPatternInPaths(replacePlural: boolean): TranslationKey[] {
+		const rawVar: string = `[a-zA-Z\\-_%\\.1-9]`;
+		const keyStaticWithQoutes: string = `(${QUOTES_REGEXP_STR}${rawVar}{1,120}${QUOTES_REGEXP_STR})`;
+		const dynamicKey: string = `(${keyStaticWithQoutes}\\s?\\+\\s?${rawVar}{1,30})`;
+		const key: string = `(${keyStaticWithQoutes}|${dynamicKey})`;
+		const html: string = `${key}\\s?\\|\\s?translate`;
+		const tsInstant: string = `\\.instant\\(${key}\\)`;
+		const tsStream: string = `\\.stream\\(${key}\\)`;
+		const pattern: RegExp = new RegExp(`${html}|${tsInstant}|${tsStream}`, 'gm');
+
+		return this.paths
+			.reduce<string[]>((acc: string[], path: string) => {
+				const fileContent: string | undefined = this.filesContent[path] || readFileSync(path, {encoding: 'utf8'});
+				this.filesContent[path] = fileContent;
+				const searchResults: RegExpMatchArray = [];
+
+				for (const match of fileContent.matchAll(pattern)) {
+					searchResults.push(match[0]);
+				}
+
+				if (searchResults.length > 0) {
+					return [...acc, ...searchResults];
+				} else {
+					return acc;
+				}
+			}, [])
+			// clear keys
+			.map((key: string) => (key.match(keyStaticWithQoutes) as RegExpMatchArray)[0])
+			// delete quotes
+			.map((key: string) => key.substring(1, key.length - 1))
+			// replace plural and create translation key
+			.reduce<TranslationKey[]>((acc: TranslationKey[], key: string) => {
+				if (replacePlural && new RegExp(PLURAL_CODE_REGEXP_STR).test(key)) {
+					const keyWithoutPruralCode: string = key.replace(PLURAL_CODE_REGEXP_STR, '');
+					return [
+						...acc,
+						...PLURAL_ENDINGS
+							.map((ending: string) => new TranslationKey(keyWithoutPruralCode + ending)),
+					];
+				} else {
+					return [...acc, new TranslationKey(key)];
+				}
+			}, []);
+	}
+
 	private getSearchedChunks(key: TranslationKey): ISearchedChanks {
-		const searchResults: TranslationKey[] = this.searchPatternInDirectory(key);
+		const searchResults: TranslationKey[] = this.searchKeyInPaths(key);
 
 		const uniqByFc: (key: TranslationKey) => boolean = (key: TranslationKey) => !!key.value;
 
@@ -60,9 +110,7 @@ export class Search {
 		};
 	}
 
-	private searchPatternInDirectory(
-		key: TranslationKey,
-	): TranslationKey[] {
+	private searchKeyInPaths(key: TranslationKey): TranslationKey[] {
 		return this.paths
 			.map((path: string) => {
 				const fileContent: string | undefined = this.filesContent[path] || readFileSync(path, {encoding: 'utf8'});

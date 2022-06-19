@@ -22,6 +22,9 @@ Optimised for Unix and Windows.
 * `-d` or `--finddir` - string - where to find directory
 * `--cutkeys` - boolean - repeat search for cut translations
 * `--replaceplural` - boolean - replace plural keys (see below)
+* `--reversesearch` - `only` or boolean:
+  * `only` - start only reverse searching (see in Documentation)
+  * boolean - start reverse search at end of main script
 
 Use `check-i18n -d=[value] -f=[value]`.
 
@@ -31,6 +34,21 @@ At the end of process file with results will be in folder.
 File name will have timestamp attributes.
 
 ## Documentation
+
+### Reverse search
+
+Command will search keys in code and compare with translation JSON.
+
+Command can be used alone (without direct searching).
+
+Check cases ([ngx-translate](https://github.com/ngx-translate/core)):
+* pipe (`key | translate`)
+* method `.instant(key)`
+* method `.stream(key)`
+
+Cases inqlude:
+* dynamic translations (with dot at end in code; like `key.`; deep for JSON = 1)
+* plural translations (if use `--replaceplural` command)
 
 ### Replace plural translations command
 

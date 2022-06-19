@@ -5,6 +5,7 @@ enum PropsEnum {
 	FindInDir = '--findDir=',
 	CutKeys = '--cutKeys=',
 	ReplacePlural = '--replacePlural=',
+	ReverseSearch = '--reverseSearch=',
 }
 
 const CONSOLE_PROPS: string[] = process.argv;
@@ -12,6 +13,7 @@ const translationUrl: string | undefined = getProp(PropsEnum.I18nPath);
 const whereToFindDir: string | undefined = getProp(PropsEnum.FindInDir);
 const cutKeys: boolean = getProp(PropsEnum.CutKeys) === 'true' || false;
 const replacePlural: boolean = getProp(PropsEnum.ReplacePlural) === 'true' || false;
+const reverseSearch: string | undefined = getProp(PropsEnum.ReverseSearch);
 
 // check required params
 if (!whereToFindDir || !translationUrl) {
@@ -39,7 +41,13 @@ const program: Program = new Program({
 	replacePlural: replacePlural,
 });
 
-program.init();
+if (reverseSearch === 'only') {
+	program.reverseSearch();
+} else {
+	program.directSearch(reverseSearch === 'true');
+}
+
+
 
 
 

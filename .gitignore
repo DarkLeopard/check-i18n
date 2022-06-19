@@ -1,5 +1,6 @@
 # compiled output
 i18n-report*.json
+reverse-search*.json
 /dist
 
 # dependencies

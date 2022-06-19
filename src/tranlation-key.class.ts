@@ -1,4 +1,8 @@
-const QUOTES_REGEXP_STR: string = '(\'|\"|\`)';
+import {
+	PLURAL_CODE_REGEXP_STR,
+	PLURAL_TRANSLATION_REGEXP,
+	QUOTES_REGEXP_STR,
+} from './constants/regexp';
 
 export class TranslationKey {
 	private paths: string[] = [];
@@ -7,11 +11,21 @@ export class TranslationKey {
 	readonly #rawValue: string;
 
 	#isCut: boolean = false;
+	#value: string;
 
 	constructor(
-		public value: string,
+		value: string,
 	) {
 		this.#rawValue = value;
+		this.#value = value;
+	}
+
+	public get value(): string {
+		return this.#value;
+	}
+
+	private set value(value: string) {
+		this.#value = value;
 	}
 
 	public get rawValue(): string {
@@ -35,7 +49,7 @@ export class TranslationKey {
 	}
 
 	public get regExp(): RegExp {
-		let value: string = this.value;
+		let value: string = this.#value;
 		switch (true) {
 			case this.hasNumberAtEnd(value):
 				value = this.deleteLastSegment(value);
@@ -57,13 +71,13 @@ export class TranslationKey {
 
 	/** Realisation without get raw value for results cos classes used. That can affect those classes in memory. */
 	public cutValue(): this {
-		let newValue: string = this.value;
+		let newValue: string = this.#value;
 		if (!this.isCut) {
 			newValue = this.deleteLastSegment(newValue);
 			if (this.hasNumberAtEnd(newValue)) {
 				newValue = this.deleteLastSegment(newValue);
 			}
-			this.changeValue(`${newValue}.`); // add dot for cutted values
+			this.value = `${newValue}.`; // add dot for cutted values
 			this.isCut = true;
 			return this;
 		} else {
@@ -82,6 +96,16 @@ export class TranslationKey {
 		}
 	}
 
+	public replacePlural(): void {
+		// old plural pipe on project
+		const pluralTranslationRegExp: RegExp = PLURAL_TRANSLATION_REGEXP;
+
+		// replace old plural defaults in key to '%ending%'
+		if (pluralTranslationRegExp.test(this.#value)) {
+			this.value = this.#value.replace(pluralTranslationRegExp, `${PLURAL_CODE_REGEXP_STR}`);
+		}
+	}
+
 	private hasNumberAtEnd(value: string): boolean {
 		const valueArr: string[] = value.split('.');
 		const numberRexExp: RegExp = new RegExp('^\d$');
@@ -95,22 +119,6 @@ export class TranslationKey {
 			return valueArr.slice(0, valueArr.length - 1).join('.');
 		} else {
 			return value;
-		}
-	}
-
-	private changeValue(value: string): TranslationKey {
-		this.value = value;
-		return this;
-	}
-
-	public replacePlural(): void {
-		// old plural pipe on project
-		const pluralTranslationRegExp: RegExp = /(_one|_many|_other)$/;
-		const pluralInCode: string = '_%ending%';
-
-		// replace old plural defaults in key to '%ending%'
-		if (pluralTranslationRegExp.test(this.value)) {
-			this.changeValue(this.value.replace(pluralTranslationRegExp, `${pluralInCode}`));
 		}
 	}
 }
