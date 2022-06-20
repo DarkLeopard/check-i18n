@@ -2,8 +2,8 @@
 
 # Check translations script
 
-Script get translations by http/http/local path and compare (one way)
-with local directory.
+Script get translations by http/http/local path and compare
+with local directory. Script has reverse mode (see in Documentation).
 
 Attantion! Deep translation chain keys give better result.
 
