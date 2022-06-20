@@ -60,7 +60,7 @@ It's not best practice!
 
 Special function what replace keys values from lang JSON file
 with ending `/(_one|_many|_other)$/` to `%ending%` before find key
-in dirrectory.
+in directory.
 
 ## Known issues
 
