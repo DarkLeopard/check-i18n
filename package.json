@@ -1,7 +1,7 @@
 {
   "name": "check-i18n",
-  "version": "1.2.2",
-  "description": "Check (Angular) JSON i18n translations from link in local directory.",
+  "version": "1.2.3",
+  "description": "Direct and reverse check of translations (Angular) i18n in the local directory with the formation of a report.",
   "repository": {
     "type": "git",
     "url": "https://github.com/DarkLeopard/check-i18n"
