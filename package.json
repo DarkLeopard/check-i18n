@@ -1,6 +1,6 @@
 {
   "name": "check-i18n",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Check (Angular) JSON i18n translations from link in local directory.",
   "repository": {
     "type": "git",
