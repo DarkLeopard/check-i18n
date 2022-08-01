@@ -1,6 +1,6 @@
 {
   "name": "check-i18n",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Direct and reverse check of translations (Angular) i18n in the local directory with the formation of a report.",
   "repository": {
     "type": "git",

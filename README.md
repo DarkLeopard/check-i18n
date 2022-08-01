@@ -18,7 +18,7 @@ Optimised for Unix and Windows.
 
 ## How to use
 
-* `-f` or `--i18ndir` - string - path to lang JSON files (http/https or local)
+* `-f` or `--i18ndir` - string - path to lang JSON file (http/https or local)
 * `-d` or `--finddir` - string - where to find directory
 * `--cutkeys` - boolean - repeat search for cut translations
 * `--replaceplural` - boolean - replace plural keys (see below)
@@ -28,7 +28,7 @@ Optimised for Unix and Windows.
 
 Use `check-i18n -d=[value] -f=[value]`.
 
-Example: `check-i18n -d=./libs -f=https://site.ru/api/v1/translations`
+Example: `check-i18n -d=./libs -f=https://site.ru/api/translations/en.json`
 
 At the end of process file with results will be in folder.
 File name will have timestamp attributes.
